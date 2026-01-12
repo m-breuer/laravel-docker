@@ -1,0 +1,14 @@
+# General
+/node_modules
+/vendor
+
+# Laravel
+.env
+/public/build
+/storage/*.key
+/storage/logs/laravel.log
+npm-debug.log
+yarn-error.log
+
+# Traefik
+/traefik/acme.json

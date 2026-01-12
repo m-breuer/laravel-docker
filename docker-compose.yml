@@ -25,8 +25,14 @@ services:
             - mailpit
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.laravel.rule=Host(`laravel.localhost`)"
-            - "traefik.http.routers.laravel.entrypoints=web"
+            - "traefik.http.routers.laravel-http.rule=Host(`${APP_DOMAIN}`)"
+            - "traefik.http.routers.laravel-http.entrypoints=web"
+            - "traefik.http.routers.laravel-http.middlewares=https-redirect"
+            - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+            - "traefik.http.routers.laravel-https.rule=Host(`${APP_DOMAIN}`)"
+            - "traefik.http.routers.laravel-https.entrypoints=websecure"
+            - "traefik.http.routers.laravel-https.tls=true"
+            - "traefik.http.routers.laravel-https.tls.certresolver=letsencrypt"
             - "traefik.http.services.laravel.loadbalancer.server.port=80"
 
     mariadb:
@@ -78,16 +84,16 @@ services:
 
     traefik:
         image: "traefik:v2.10"
-        command:
-            - "--api.insecure=true"
-            - "--providers.docker=true"
-            - "--providers.docker.exposedbydefault=false"
-            - "--entrypoints.web.address=:80"
+        env_file:
+            - .env
         ports:
             - "80:80"
+            - "443:443"
             - "8080:8080"
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock:ro"
+            - "./traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
+            - "./traefik/acme.json:/acme.json"
         networks:
             - app-network
 

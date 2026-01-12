@@ -28,9 +28,9 @@ Before you begin, ensure you have the following installed on your system:
 
     For each of your Laravel projects, you will need to do the following:
 
-    a. **Create a `.env` file:**
+    a. **Copy the `.env.example` to `.env`:**
 
-    In your Laravel project's root directory, create a `.env` file. You can copy the `.env.example` from this repository as a starting point.
+    In your Laravel project's root directory, copy the `.env.example` from this repository to `.env`.
 
     b. **Configure your `.env` file:**
 

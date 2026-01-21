@@ -4,7 +4,7 @@ ARG GROUP_ID
 
 FROM ubuntu:22.04
 
-LABEL maintainer="Taylor Otwell"
+
 
 ARG WWWGROUP
 ARG USER_ID

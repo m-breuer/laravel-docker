@@ -26,15 +26,15 @@ RUN apt-get update \
     && apt-key adv --homedir ~/.gnupg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C300EE8C \
     && echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu jammy main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
     && apt-get update \
-    && apt-get install -y php8.1-fpm php8.1-cli php8.1-dev \
-       php8.1-pgsql php8.1-sqlite3 php8.1-gd \
-       php8.1-curl php8.1-memcached \
-       php8.1-imap php8.1-mysql php8.1-mbstring \
-       php8.1-xml php8.1-zip php8.1-bcmath php8.1-soap \
-       php8.1-intl php8.1-readline \
-       php8.1-ldap \
-       php8.1-msgpack php8.1-igbinary php8.1-redis php8.1-swoole \
-       php8.1-pcov php8.1-xdebug \
+    && apt-get install -y php8.5-fpm php8.5-cli php8.5-dev \
+       php8.5-pgsql php8.5-sqlite3 php8.5-gd \
+       php8.5-curl php8.5-memcached \
+       php8.5-imap php8.5-mysql php8.5-mbstring \
+       php8.5-xml php8.5-zip php8.5-bcmath php8.5-soap \
+       php8.5-intl php8.5-readline \
+       php8.5-ldap \
+       php8.5-msgpack php8.5-igbinary php8.5-redis php8.5-swoole \
+       php8.5-pcov php8.5-xdebug \
     && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
     && apt-get install -y nodejs \
@@ -50,14 +50,14 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.1
+RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.5
 
 RUN groupadd --force -g $WWWGROUP www-data
 RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 www-data
 
 COPY start-container /usr/local/bin/start-container
 COPY nginx.conf /etc/nginx/sites-available/default
-COPY php.ini /etc/php/8.1/cli/conf.d/99-www-data.ini
+COPY php.ini /etc/php/8.5/cli/conf.d/99-www-data.ini
 COPY cron /etc/cron.d/laravel
 RUN chmod +x /usr/local/bin/start-container
 RUN crontab /etc/cron.d/laravel

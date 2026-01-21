@@ -18,6 +18,6 @@ fi
 
 chown -R $WWWUSER:$WWWGROUP /var/www
 
-/usr/sbin/php-fpm8.4 -D
+/usr/sbin/php-fpm8.3 -D
 /usr/sbin/nginx -g "daemon off;"
 /usr/sbin/cron -f

@@ -1,11 +1,12 @@
 # Laravel Docker Environment
 
-This repository provides a comprehensive Docker-based development environment for Laravel applications. It is designed to be used as a central-managed environment for multiple projects.
+This repository provides a comprehensive Docker-based environment for Laravel applications, with a clear separation between development and production setups.
 
 ## Features
 
--   **Multiple PHP Runtimes:** Easily switch between PHP 8.1, 8.2, 8.3, and 8.4.
--   **Pre-configured Services:** Includes essential services like MariaDB, Redis, and Mailpit out of the box.
+-   **Development & Production Ready:** Separate configurations for development and production.
+-   **Traefik Integration:** Automatic SSL and custom domains with Traefik.
+-   **Pre-configured Services:** Includes MariaDB, Redis, and Mailpit for development.
 
 ## Prerequisites
 
@@ -18,86 +19,84 @@ Before you begin, ensure you have the following installed on your system:
 
 1.  **Clone the Repository:**
 
-    It is recommended to clone this repository to a central location on your system, for example, `~/laravel-docker`.
+    ```bash
+    git clone https://github.com/m-breuer/laravel-docker.git
+    cd laravel-docker
+    ```
+
+2.  **Environment Configuration:**
+
+    Copy the `.env.example` file to `.env` and customize the variables.
 
     ```bash
-    git clone https://github.com/m-breuer/laravel-docker.git ~/laravel-docker
+    cp .env.example .env
     ```
 
-2.  **Project Setup:**
+    Make sure to set the following variables in your `.env` file:
+    - `APP_DOMAIN`: Your application's domain (e.g., `laravel.localhost`).
+    - `LETSENCRYPT_EMAIL`: Your email for Let's Encrypt.
+    - `DB_PASSWORD`: Your database password.
 
-    For each of your Laravel projects, you will need to do the following:
+## Development
 
-    a. **Copy the `.env.example` to `.env`:**
+To start the development environment, run:
 
-    In your Laravel project's root directory, copy the `.env.example` from this repository to `.env`.
-
-    b. **Configure your `.env` file:**
-
-    Open the `.env` file and customize the variables. It is important to set a unique `APP_PORT` and `FORWARD_DB_PORT` for each project to avoid port conflicts.
-
-    c. **Add a `docker-compose.yml` file:**
-
-    In your Laravel project's root directory, create a `docker-compose.yml` file with the following content:
-
-    ```yaml
-    version: '3'
-
-    services:
-      main:
-        extends:
-          file: ~/laravel-docker/docker-compose.yml
-          service: laravel.docker
-    ```
-
-    This will extend the main `docker-compose.yml` file and use the `laravel.docker` service.
-
-3.  **Start the Containers:**
-
-    To start the containers for a specific project, navigate to the project's root directory and run:
-
-    ```bash
-    docker-compose up -d
-    ```
-
-    To stop the containers, use:
-
-    ```bash
-    docker-compose down
-    ```
-
-## Switching PHP Versions
-
-To switch the PHP version for a specific project, you can override the `build.context` in your project's `docker-compose.yml` file.
-
-For example, to use PHP 8.2, your `docker-compose.yml` would look like this:
-
-```yaml
-version: '3'
-
-services:
-    main:
-        extends:
-            file: ~/laravel-docker/docker-compose.yml
-            service: laravel.docker
-        build:
-            context: ~/laravel-docker/runtimes/8.2
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.traefik.yml up -d
 ```
 
-The available runtimes are located in the `runtimes` directory of this repository.
+This will start the following services:
+- `laravel.docker`: The application container with PHP 8.3, Nginx, and all development tools. Your local code is mounted into this container.
+- `mariadb`: MariaDB database server.
+- `redis`: Redis in-memory data store.
+- `mailpit`: An email testing tool with a web UI, accessible at `http://localhost:8025`.
+- `traefik`: The Traefik reverse proxy.
+
+Your application will be available at `https://<your-app-domain>`.
+
+To stop the development environment, run:
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.traefik.yml down
+```
+
+### Switching PHP Versions
+
+To switch the PHP version for the development environment, set the `PHP_VERSION` variable in your `.env` file to one of the available versions: `8.3`, `8.4`, or `8.5`. If not set, it will default to `8.3`.
+
+## Production
+
+To build and start the production environment, run:
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.traefik.yml up -d --build
+```
+
+This will build optimized production images for PHP-FPM and Nginx and start the following services:
+- `php`: The PHP-FPM container.
+- `nginx`: The Nginx container, which serves your application.
+- `mariadb`: MariaDB database server.
+- `redis`: Redis in-memory data store.
+- `traefik`: The Traefik reverse proxy.
+
+Your application will be available at `https://<your-app-domain>`.
+
+To stop the production environment, run:
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.traefik.yml down
+```
 
 ## Services
 
-This environment includes the following services:
+| Service         | Description                            | Development | Production |
+| :-------------- | :------------------------------------- | :---------- | :--------- |
+| `laravel.docker`| The Laravel application container.     | ✓           | ✗          |
+| `php`           | The PHP-FPM container.                 | ✗           | ✓          |
+| `nginx`         | The Nginx container.                   | ✗           | ✓          |
+| `mariadb`       | MariaDB database server.               | ✓           | ✓          |
+| `redis`         | Redis in-memory data store.            | ✓           | ✓          |
+| `mailpit`       | An email testing tool.                 | ✓           | ✗          |
+| `traefik`       | The Traefik reverse proxy.             | ✓           | ✓          |
 
-| Service         | Description                            | Default Port (Host) |
-| :-------------- | :------------------------------------- | :------------------ |
-| `laravel.docker`| The Laravel application container.     | `80`                |
-| `mariadb`       | MariaDB database server.               | `3306`              |
-| `redis`         | Redis in-memory data store.            | `6379`              |
-| `mailpit`       | An email testing tool with a web UI.   | `1025` (SMTP), `8025` (Web) |
-
-You can access the Mailpit web interface at `http://localhost:8025`.
 
 ## Contributing
 

@@ -16,10 +16,8 @@ if [ ! -z "$WWWUSER" ]; then
     useradd -u $WWWUSER -g $WWWGROUP -d /var/www -s /bin/bash $WWWUSER
 fi
 
-chown -R $WWWUSER:$WWWGROUP /var/wI will now do the same for the other PHP versions.
-I will start with PHP 8.3.
-ww
+chown -R $WWWUSER:$WWWGROUP /var/www
 
-/usr/sbin/php-fpm8.2 -D
+/usr/sbin/php-fpm8.3 -D
 /usr/sbin/nginx -g "daemon off;"
 /usr/sbin/cron -f

@@ -33,7 +33,7 @@ services:
             - "traefik.http.services.laravel.loadbalancer.server.port=80"
 
     mariadb:
-        image: 'mariadb:10'
+        image: 'mariadb:11.2'
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
         environment:
@@ -56,7 +56,7 @@ services:
             retries: 3
             timeout: 5s
     redis:
-        image: 'redis:alpine'
+        image: 'redis:7.2-alpine'
         ports:
             - '${FORWARD_REDIS_PORT:-6379}:6379'
         volumes:
